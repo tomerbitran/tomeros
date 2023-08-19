@@ -15,7 +15,7 @@ simple_puts:
 
     mov ah, 0x0e 
 .loop:
-    mov al, byte [ds:si]
+    mov al, byte [si]
     or al, al                   ; test null char
     jz .finish
 
@@ -47,7 +47,7 @@ bootloader_main:
     hlt
 
     
-_STR_BOOTING: db "Booting with Tomer... ", ENDL, 0
+_STR_BOOTING: db "Booting Tomer :D", ENDL, 0
 _STR_HALT: db  "HALTING...", ENDL, 0
 
 times 510 - ($ - $$) db 0
