@@ -14,16 +14,16 @@ simple_puts:
     push ax
 
     mov ah, 0x0e 
-._simple_puts_loop:
+.loop:
     mov al, byte [ds:si]
     or al, al                   ; test null char
-    jz ._simple_puts_finish
+    jz .finish
 
     inc si                      ; increment pointer
     int 0x10                    ; print char
 
-    jmp ._simple_puts_loop 
-._simple_puts_finish:
+    jmp .loop 
+.finish:
     pop ax 
     pop si
     ret
@@ -40,11 +40,15 @@ bootloader_main:
 
     mov si, _STR_BOOTING
     call simple_puts
-
     
+    mov si, _STR_HALT
+    call simple_puts
+    
+    hlt
 
     
 _STR_BOOTING: db "Booting with Tomer... ", ENDL, 0
+_STR_HALT: db  "HALTING...", ENDL, 0
 
 times 510 - ($ - $$) db 0
 dw 0xAA55
