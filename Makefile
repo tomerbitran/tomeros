@@ -1,25 +1,20 @@
-ASM=nasm
-CC=g++
-QEMU=qemu-system-x86_64
+QEMU=qemu-system-i386
 
-BOOT_DIR=src/boot
-KERNEL_DIR=src/kernel
+BOOT_DIR=kernel/boot
+KERNEL_DIR=kernel
 BUILD_DIR=build
 
 
-boot: $(BOOT_DIR)/boot.asm
+simple_boot: $(BOOT_DIR)/simple_boot.asm
 	@echo Making $@
-	$(ASM) -f bin $(BOOT_DIR)/boot.asm -o $(BUILD_DIR)/boot.bin
+	$(ASM) -f bin $(BOOT_DIR)/simple_boot.asm -o $(BUILD_DIR)/simple_boot.bin
 
-kernel:
-	@echo Making $@
-	touch aaa
-	rm aaa
+kernel: 
+	$(MAKE) -C $(KERNEL_DIR)
 
-# run qemu on boot binary 
-run: boot
+run: kernel
 	@echo RUNNING
-	$(QEMU) $(BUILD_DIR)/boot.bin
+	$(QEMU) AAA AAA AAA AAA
 
 clean:
 	@echo CLEANING
