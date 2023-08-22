@@ -1,21 +1,38 @@
 QEMU=qemu-system-i386
 
-BOOT_DIR=kernel/boot
+# this is bullshit & skill issue. should remove
+ASM=nasm
+
+LEGACY_DIR=legacy_lol
 KERNEL_DIR=kernel
 BUILD_DIR=build
+ISO_DIR=build/iso
 
 
-simple_boot: $(BOOT_DIR)/simple_boot.asm
+# this is bullshit & skill issue. should remove
+simple_boot: $(LEGACY_DIR)/simple_boot.asm
 	@echo Making $@
-	$(ASM) -f bin $(BOOT_DIR)/simple_boot.asm -o $(BUILD_DIR)/simple_boot.bin
+	$(ASM) -f bin $(LEGACY_DIR)/simple_boot.asm -o $(BUILD_DIR)/simple_boot.bin
 
+# creates build/kernel.elf
 kernel: 
+	@echo Making $@
 	$(MAKE) -C $(KERNEL_DIR)
 
-run: kernel
-	@echo RUNNING
-	$(QEMU) AAA AAA AAA AAA
+# creates iso image (build/tomeros.iso)
+iso_image: grub.cfg kernel
+	@echo Making $@
+	mkdir -p $(ISO_DIR)/boot/grub
+	cp grub.cfg $(ISO_DIR)/boot/grub/grub.cfg
+	cp $(BUILD_DIR)/kernel.elf $(ISO_DIR)/boot/kernel.elf
+	grub-mkrescue -o $(BUILD_DIR)/tomeros.iso $(ISO_DIR)
 
+# run qemu on iso image (hopefully grub will grab my os)
+run: iso_image
+	@echo RUNNING ON ISO IMAGE
+	$(QEMU)  -serial stdio -cdrom $(BUILD_DIR)/tomeros.iso
+
+# yes remove everything
 clean:
 	@echo CLEANING
-	rm $(BUILD_DIR)/boot.bin
+	rm -rf $(BUILD_DIR)
