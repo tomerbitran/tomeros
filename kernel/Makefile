@@ -8,24 +8,32 @@ export ASM_FLAGS:= -f elf32
 export CPP_FLAGS:=$(CPP_FLAGS) -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-plt -fno-pic -m32
 export LD_FLAGS:=$(LD_FLAGS) -T linker.ld -ffreestanding $(OPT_LEVEL) -nostdlib -lgcc
 
-export OBJECT_LIST:=kernel_main.o
+OBJECT_LIST=kernel_main.o
+OBJECT_LIST+=boot.o
+
+_OBJECT_LIST=$(patsubst $(ROOT_DIR)/$(BUILD_DIR)/%.c, %.o, $(OBJECT_LIST))
 MODULES:=boot.module
 
 .PHONY: kernel
 
 %.module: %
-	@echo BUILD MODULE $<
-	@$(MAKE) -C $<
+	@echo BUILDING MODULE $<
+	@$(MAKE) -C $< --no-print-directory
 
-kernel: $(MODULES)
-	@$(MAKE) kernel.elf
+kernel: $(MODULES) kernel.elf
 	@echo BUILT KERNEL
 
-kernel.elf: $(MODULES)
-	$(CC) $(LDFLAGS) $(OBJECT_LIST) -o 	$(ROOT_DIR)/$(BUILD_DIR)/$@
+kernel.elf: $(MODULES) kernel_main.o
+	@echo AAAAA $(OBJECT_LIST)
+	@cp linker.ld $(ROOT_DIR)/$(BUILD_DIR)/linker.ld
+	@cd $(ROOT_DIR)/$(BUILD_DIR); \
+	$(CC) $(LDFLAGS) $(_OBJECT_LIST) -o $(ROOT_DIR)/$(BUILD_DIR)/$@
 
 %.o: %.s
-	$(ASM) $< $(ASM_FLAGS) -o $@
+	@touch $(ROOT_DIR)/$(BUILD_DIR)/$@
+	$(ASM) $< $(ASM_FLAGS) -o $(ROOT_DIR)/$(BUILD_DIR)/$@
 
 %.o: %.cpp %.h
-	$(CXX) -c $< $(CPPFLAGS)  -o $@
+	$(CXX) -c $< $(CPPFLAGS) -o $@
+	cp $@ $(ROOT_DIR)/$(BUILD_DIR)/$@
+	rm $@

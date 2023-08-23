@@ -1,3 +1,6 @@
 
-boot: boot.o
-	OBJECT_LIST=$(OBJECT_LIST) boot.o
+boot: boot.o ;
+
+%.o: %.s
+	@touch $(ROOT_DIR)/$(BUILD_DIR)/$@
+	$(ASM) $< $(ASM_FLAGS) -o $(ROOT_DIR)/$(BUILD_DIR)/$@

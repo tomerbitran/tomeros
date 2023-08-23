@@ -9,7 +9,7 @@ export KERNEL_DIR=kernel
 export BUILD_DIR=build
 export ISO_DIR=build/iso
 
-.PHONY: kernel
+.PHONY: kernel clean run
 
 # this is bullshit & skill issue. should remove
 simple_boot: $(LEGACY_DIR)/simple_boot.asm
@@ -18,8 +18,9 @@ simple_boot: $(LEGACY_DIR)/simple_boot.asm
 
 # creates build/kernel.elf
 kernel: 
+	@mkdir -p $(BUILD_DIR)
 	@echo Making $@
-	@$(MAKE) -C $(KERNEL_DIR) $@
+	@$(MAKE) -C $(KERNEL_DIR) $@ --no-print-directory
 
 # creates iso image (build/tomeros.iso)
 iso_image: kernel grub.cfg
