@@ -1,8 +1,11 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+// #include <stdbool.h>
+// #include <stddef.h>
+// #include <stdint.h>
 
- 
+typedef unsigned char 	uint8_t;
+typedef unsigned short 	uint16_t;
+typedef unsigned int 	size_t;
+
 /* Hardware text mode color constants. */
 enum vga_color {
 	VGA_COLOR_BLACK = 0,

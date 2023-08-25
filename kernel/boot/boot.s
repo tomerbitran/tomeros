@@ -29,6 +29,7 @@ stack_top:
 ; bootloader (GRUB) will jump to this position once the kernel has been loaded.
 
 section .text
+
 global _start:function (_start.end - _start)
 _start:
 

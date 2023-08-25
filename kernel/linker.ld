@@ -1,40 +1,38 @@
 /* what the fuck...linker script wizards...*/
-KERNEL_VMA_START=0xf8000000;
+KERNEL_VMA_START = 1M;
 ENTRY(_start)
 SECTIONS
 {
     . = KERNEL_VMA_START;
 
-    .text : AT(ADDR(.text) - KERNEL_VMA_START)
+    /* First put the multiboot header, as it is required to be put very early
+	   early in the image or the bootloader won't recognize the file format.
+	   Next we'll put the .text section. */
+    .text BLOCK(4K) : ALIGN(4K)
     {
-        _code = .;
+        *(.multiboot)
         *(.text)
-        *(.rodata*)
-        . = ALIGN(4096);
     }
 
-   .data : AT(ADDR(.data) - KERNEL_VMA_START)
-   {
-        _data = .;
+    /* Read-only data. */
+    .rodata BLOCK(4K) : ALIGN(4K)
+    {
+        *(.rodata)
+    }
+
+    /* Read-write data (initialized) */
+    .data BLOCK(4K) : ALIGN(4K)
+    {
         *(.data)
-        . = ALIGN(4096);
-   }
+    }
 
-   .eh_frame : AT(ADDR(.eh_frame) - KERNEL_VMA_START)
-   {
-       _ehframe = .;
-       *(.eh_frame)
-        . = ALIGN(4096);
-   }
+	/* Read-write data (uninitialized) and stack */
+	.bss BLOCK(4K) : ALIGN(4K)
+	{
+		*(COMMON)
+		*(.bss)
+	}
 
-   .bss : AT(ADDR(.bss) - KERNEL_VMA_START)
-   {
-       _bss = .;
-       *(.bss)
-
-        *(COMMON)
-       . = ALIGN(4096);
-   }
-
-   _end = .;
+	/* The compiler may produce other sections, by default it will put them in
+	   a segment with the same name. Simply add stuff here as needed. */
 }

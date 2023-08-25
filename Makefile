@@ -8,6 +8,7 @@ export LEGACY_DIR=legacy_lol
 export KERNEL_DIR=kernel
 export BUILD_DIR=build
 export ISO_DIR=build/iso
+export CC_DIR=$(HOME)/opt/cross_compiler
 
 .PHONY: kernel clean run
 
@@ -17,7 +18,7 @@ simple_boot: $(LEGACY_DIR)/simple_boot.asm
 	$(ASM) -f bin $(LEGACY_DIR)/simple_boot.asm -o $(BUILD_DIR)/simple_boot.bin
 
 # creates build/kernel.elf
-kernel: 
+kernel:
 	@mkdir -p $(BUILD_DIR)
 	@echo Making $@
 	@$(MAKE) -C $(KERNEL_DIR) $@ --no-print-directory
