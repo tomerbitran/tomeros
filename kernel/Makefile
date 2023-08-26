@@ -9,9 +9,15 @@ export ASM_FLAGS:= -f elf32
 export CPP_FLAGS:=$(CPP_FLAGS) -ffreestanding $(OPT_LEVEL) -Wall -Wextra -fno-exceptions -fno-rtti -fno-plt -fno-pic
 export LD_FLAGS:=$(LD_FLAGS) -T linker.ld -ffreestanding -nostdlib -lgcc
 
-OBJECT_LIST=boot.o kernel.o string.o serial.o
+CRTI_OBJ=crti.o
+CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+CRTN_OBJ=crtn.o
+
+OBJECT_LIST=boot.o kernel.o string.o serial.o $(CRTI_OBJ) $(CRTN_OBJ)
 
 _OBJECT_LIST=$(patsubst $(ROOT_DIR)/$(BUILD_DIR)/%.c, %.o, $(OBJECT_LIST))
+_OBJECT_LIST+=$(CRTBEGIN_OBJ) $(CRTEND_OBJ) 
 MODULES:=boot.module utils.module
 
 .PHONY: kernel
@@ -23,7 +29,7 @@ MODULES:=boot.module utils.module
 kernel: $(MODULES) kernel.elf
 	@echo BUILT KERNEL
 
-kernel.elf: $(MODULES) kernel.o
+kernel.elf: $(MODULES) kernel.o $(CRTI_OBJ) $(CRTN_OBJ)
 	@echo LINKING $(OBJECT_LIST)
 	@cp linker.ld $(ROOT_DIR)/$(BUILD_DIR)/linker.ld
 	@mv kernel.o $(ROOT_DIR)/$(BUILD_DIR)/kernel.o
