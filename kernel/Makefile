@@ -14,13 +14,15 @@ CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
 CRTN_OBJ=crtn.o
 
-OBJECT_LIST=boot.o kernel.o string.o serial.o $(CRTI_OBJ) $(CRTN_OBJ)
+OBJECT_LIST=boot.o kernel.o string.o screen.o io_port.o $(CRTI_OBJ) $(CRTN_OBJ)
 
 _OBJECT_LIST=$(patsubst $(ROOT_DIR)/$(BUILD_DIR)/%.c, %.o, $(OBJECT_LIST))
 _OBJECT_LIST+=$(CRTBEGIN_OBJ) $(CRTEND_OBJ) 
 MODULES:=boot.module utils.module
 
 .PHONY: kernel
+
+export
 
 %.module: %
 	@echo BUILDING MODULE $<

@@ -1,5 +1,5 @@
-#ifndef __SERIAL_H
-#define __SERIAL_H
+#ifndef __SCREEN_H
+#define __SCREEN_H
 
 #include "string.h"
 namespace serial 
@@ -35,10 +35,10 @@ VGAEntry vga_entry(unsigned char uc, VGAColorEntry color);
 
 VGAColorEntry vga_color_entry(VGAColor fg, VGAColor bg);
 
-class SerialPort
+class Screen
 {
     public:
-    SerialPort();
+    Screen();
 
     void reset_row(size_t row_num);
     void scroll(int num_lines);
@@ -60,4 +60,4 @@ class SerialPort
 
 } //namespace serial
 
-#endif //__SERIAL_H
+#endif //__SCREEN_H

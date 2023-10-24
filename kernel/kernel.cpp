@@ -6,14 +6,18 @@ extern "C" {
 void kernel_main(void) 
 {
 	/* Initialize terminal interface */
-	serial::SerialPort serial{};
+	serial::Screen screen{};
+	serial::IoPort debug_port{0x3F8};
 
-	serial.writestring("TOMEROS BOOTED!\n");
+	screen.writestring("TOMEROS BOOTED!\n");
 	for (int i = 0; i < 100; i++) {
-		serial.writestring("Hello, Kernel World!\n");
+		screen.writestring("Hello, Kernel World!\n");
 	}
 	
-	serial.writestring("AAAAAA\n");
+	screen.writestring("AAAAAA\n");
+
+	debug_port.writeString("Hello, Debug Port!\n");
+	
 }
 
 } // EXTERN "C"

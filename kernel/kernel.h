@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "utils/string.h"
-#include "utils/serial.h"
+#include "utils/screen.h"
+#include "utils/io_port.h"
 
 #endif //__KERNEL_H
