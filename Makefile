@@ -4,10 +4,14 @@ QEMU=qemu-system-i386
 export ASM=nasm
 
 export ROOT_DIR=$(shell pwd)
-export LEGACY_DIR=legacy_lol
-export KERNEL_DIR=kernel
-export BUILD_DIR=build
-export ISO_DIR=build/iso
+
+
+
+export LEGACY_DIR=$(ROOT_DIR)/legacy_lol
+export KERNEL_DIR=$(ROOT_DIR)/kernel
+export BUILD_DIR=$(ROOT_DIR)/build
+export ISO_DIR=$(ROOT_DIR)/build/iso
+
 export CC_DIR=$(HOME)/opt/cross_compiler
 
 .PHONY: kernel clean run

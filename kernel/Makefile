@@ -1,24 +1,21 @@
-export ASM = nasm
-export CXX = $(HOME)/opt/cross_compiler/bin/i386-elf-g++
-export CC 	= $(HOME)/opt/cross_compiler/bin/i386-elf-gcc
+ASM = nasm
+CXX = $(HOME)/opt/cross_compiler/bin/i386-elf-g++
+CC 	= $(HOME)/opt/cross_compiler/bin/i386-elf-gcc
 
 OPT_LEVEL:=-O2
 
 # INCLUDE_PATH= $(HOME)/opt/cross_compiler/lib/gcc/i386-elf/9.3.0/include
-export ASM_FLAGS:= -f elf32
-export CPP_FLAGS:=$(CPP_FLAGS) -ffreestanding $(OPT_LEVEL) -Wall -Wextra -fno-exceptions -fno-rtti -fno-plt -fno-pic
-export LD_FLAGS:=$(LD_FLAGS) -T linker.ld -ffreestanding -nostdlib -lgcc
+ASM_FLAGS:= -f elf32
+CPP_FLAGS:=$(CPP_FLAGS) -ffreestanding $(OPT_LEVEL) -Wall -Wextra -fno-exceptions -fno-rtti -fno-plt -fno-pic
+LD_FLAGS:=$(LD_FLAGS) -T linker.ld -ffreestanding -nostdlib -lgcc
 
 CRTI_OBJ=crti.o
 CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
 CRTN_OBJ=crtn.o
 
-OBJECT_LIST=boot.o kernel.o string.o screen.o io_port.o $(CRTI_OBJ) $(CRTN_OBJ)
 
-_OBJECT_LIST=$(patsubst $(ROOT_DIR)/$(BUILD_DIR)/%.c, %.o, $(OBJECT_LIST))
-_OBJECT_LIST+=$(CRTBEGIN_OBJ) $(CRTEND_OBJ) 
-MODULES:=boot.module utils.module
+MODULES:=boot.module utils.module memory.module interrupts.module
 
 .PHONY: kernel
 
@@ -31,16 +28,20 @@ export
 kernel: $(MODULES) kernel.elf
 	@echo BUILT KERNEL
 
-kernel.elf: $(MODULES) kernel.o $(CRTI_OBJ) $(CRTN_OBJ)
+kernel.elf: $(MODULES) $(BUILD_DIR)/kernel.o $(CRTI_OBJ) $(CRTN_OBJ)
+	$(eval OBJECT_LIST := $(wildcard $(BUILD_DIR)/*.o))
+
+	$(eval _OBJECT_LIST := $(patsubst $(BUILD_DIR)/%.c, %.o, $(OBJECT_LIST)))
+
 	@echo LINKING $(OBJECT_LIST)
-	@cp linker.ld $(ROOT_DIR)/$(BUILD_DIR)/linker.ld
-	@mv kernel.o $(ROOT_DIR)/$(BUILD_DIR)/kernel.o
-	@cd $(ROOT_DIR)/$(BUILD_DIR); \
-	$(CC) $(LD_FLAGS) $(_OBJECT_LIST) -o $(ROOT_DIR)/$(BUILD_DIR)/$@
+	@cp linker.ld $(BUILD_DIR)/linker.ld
+	@cd $(BUILD_DIR); \
+	$(CC) $(LD_FLAGS) $(_OBJECT_LIST) -o $(BUILD_DIR)/$@
 
 %.o: %.s
-	@touch $(ROOT_DIR)/$(BUILD_DIR)/$@
-	$(ASM) $< $(ASM_FLAGS) -o $(ROOT_DIR)/$(BUILD_DIR)/$@
+	@touch $(BUILD_DIR)/$@
+	$(ASM) $< $(ASM_FLAGS) -o $(BUILD_DIR)/$@
 
-%.o: %.cpp %.h
-	$(CXX) -c $< $(CPP_FLAGS) -o $@
+$(BUILD_DIR)/%.o: %.cpp
+	$(CXX) $(CPP_FLAGS) -c $< -o $@
+	@echo "Compiled $< successfully!"

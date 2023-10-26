@@ -3,7 +3,7 @@ SRCS := $(wildcard *.cpp)
 OBJS := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 
 # Define the targets
-utils: $(OBJS)
+interrupts: $(OBJS)
 
 $(BUILD_DIR)/%.o: %.cpp
 	$(CXX) $(CPP_FLAGS) -c $< -o $@
