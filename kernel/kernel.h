@@ -9,4 +9,6 @@
 #include "utils/screen.h"
 #include "utils/io_port.h"
 
+#include "memory/gdt.h"
+
 #endif //__KERNEL_H

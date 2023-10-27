@@ -5,6 +5,9 @@ extern "C" {
 
 void kernel_main(void) 
 {
+	/* Initialize GDT */
+	gdt::init_gdt();
+	
 	/* Initialize terminal interface */
 	serial::Screen screen{};
 	serial::IoPort debug_port{0x3F8};
